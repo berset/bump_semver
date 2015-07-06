@@ -1,0 +1,32 @@
+#!/usr/bin/perl -w
+
+my $to_bump = shift;
+
+die 'usage: bump (major|minor|patch)' unless (defined $to_bump &&
+           (  $to_bump eq 'minor'
+           || $to_bump eq 'major'
+           || $to_bump eq 'patch'));
+
+my $version = `git describe`;
+chomp $version;
+
+my $semantic_version = $1 if ($version =~ /^(v[0-9]+\.[0-9]+\.[0-9]+)/);
+
+die 'could not interpret your last tag: ',$version,'. Start by choosing one manually, e.g. v0.1.0' unless $semantic_version;
+
+my ($major, $minor, $patch) = ($1, $2, $3) if ($semantic_version =~ /v([0-9]+)\.([0-9]+)\.([0-9]+)/);
+
+if ($to_bump eq 'major') {
+    $major++;
+} elsif ($to_bump eq 'minor') {
+    $minor++;
+} elsif ($to_bump eq 'patch') {
+    $patch++;
+}
+
+my $new_version = 'v'.$major.'.'.$minor.'.'.$patch;
+
+print 'PATCH++: ',$semantic_version, ' -> ', $new_version,"\n" ;
+
+system(sprintf("git tag -a '%s'", $new_version));
+
