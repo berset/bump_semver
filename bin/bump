@@ -38,7 +38,7 @@ close(MSG);
 system(sprintf("git log '--pretty=format: * %%s'  %s.. >> '%s'", $semantic_version, $tag_msg));
 
 
-system(sprintf("git tag -a '%s' -F '%s'", $new_version, $tag_msg));
+system(sprintf("git tag -a '%s' --cleanup=verbatim -F '%s'", $new_version, $tag_msg));
 
 unlink $tag_msg;
 system("git push --tags");
