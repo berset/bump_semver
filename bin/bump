@@ -35,7 +35,7 @@ chomp $tag_msg;
 open(MSG, ">$tag_msg");
 print MSG 'PATCH++: ',$semantic_version, ' -> ', $new_version,"\n\n" ;
 close(MSG);
-system(sprintf("git log '--pretty=format: * %%H %%an: %%s'  %s.. >> '%s'", $semantic_version, $tag_msg));
+system(sprintf("git log '--pretty=format: * %%s'  %s.. >> '%s'", $semantic_version, $tag_msg));
 
 
 system(sprintf("git tag -a '%s' -F '%s'", $new_version, $tag_msg));
