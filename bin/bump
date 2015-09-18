@@ -33,7 +33,7 @@ my $tag_msg = `mktemp tag-msg-XXXXXXX`;
 chomp $tag_msg;
 
 open(MSG, ">$tag_msg");
-print MSG 'PATCH++: ',$semantic_version, ' -> ', $new_version,"\n\n" ;
+print MSG '# ', $new_version, "\n\n## Changes since ", $semantic_version, "\n" ;
 close(MSG);
 system(sprintf("git log '--pretty=format: * %%s'  %s.. >> '%s'", $semantic_version, $tag_msg));
 
