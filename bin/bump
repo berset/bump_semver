@@ -29,7 +29,16 @@ if ($to_bump eq 'major') {
 
 my $new_version = 'v'.$major.'.'.$minor.'.'.$patch;
 
-print 'PATCH++: ',$semantic_version, ' -> ', $new_version,"\n" ;
+my $tag_msg = `mktemp tag-msg-XXXXXXX`;
+chomp $tag_msg;
 
-system(sprintf("git tag -a '%s'", $new_version));
+open(MSG, ">$tag_msg");
+print MSG 'PATCH++: ',$semantic_version, ' -> ', $new_version,"\n\n" ;
+close(MSG);
+system(sprintf("git log '--pretty=format: * %%H %%an: %%s'  %s..", $semantic_version));
 
+
+system(sprintf("git tag -a '%s' -F '%s'", $new_version, $tag_msg));
+
+unlink $tag_msg;
+system("git push --tags");
