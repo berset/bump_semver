@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+use Data::Dumper;
+
 my $to_bump = shift;
 
 die 'usage: bump (major|minor|patch)' unless (defined $to_bump &&
@@ -7,7 +9,9 @@ die 'usage: bump (major|minor|patch)' unless (defined $to_bump &&
            || $to_bump eq 'major'
            || $to_bump eq 'patch'));
 
-my $version = `git describe`;
+my $version;
+
+$version = `git describe`;
 chomp $version;
 
 my $semantic_version = $1 if ($version =~ /^(v[0-9]+\.[0-9]+\.[0-9]+)/);
@@ -31,14 +35,13 @@ my $new_version = 'v'.$major.'.'.$minor.'.'.$patch;
 
 my $tag_msg = `mktemp tag-msg-XXXXXXX`;
 chomp $tag_msg;
-
 open(MSG, ">$tag_msg");
-print MSG $new_version, "\n\n## Changes since ", $semantic_version, "\n" ;
+print MSG $new_version, "\n\n## Changes since ", $semantic_version, "\n";
 close(MSG);
 system(sprintf("git log '--pretty=format: * %%s'  %s.. >> '%s'", $semantic_version, $tag_msg));
-
-
-system(sprintf("git tag -a '%s' --cleanup=verbatim -F '%s'", $new_version, $tag_msg));
-
+system(sprintf("echo >> '%s'", $tag_msg));
+system(sprintf("echo >> '%s'", $tag_msg));
+system(sprintf("git tag -s '%s' --cleanup=verbatim -F '%s'", $new_version, $tag_msg));
 unlink $tag_msg;
 system("git push --tags");
+system("git push");
